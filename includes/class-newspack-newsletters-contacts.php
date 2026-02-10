@@ -49,17 +49,6 @@ class Newspack_Newsletters_Contacts {
 			return true;
 		}
 
-		/**
-		 * Filters the contact before subscription (and before intent is stored when async).
-		 * Use this to add metadata from the current request (e.g. UTM) so it is available in async processing.
-		 *
-		 * @param array  $contact  Contact data.
-		 * @param array  $lists    List IDs.
-		 * @param bool   $async    Whether this is an async subscription.
-		 * @param string $context  Context string.
-		 */
-		$contact = apply_filters( 'newspack_newsletters_subscribe_contact', $contact, $lists, $async, $context );
-
 		$existing_contact = Newspack_Newsletters_Subscription::get_contact_data( $contact['email'], true );
 		$is_updating      = \is_wp_error( $existing_contact ) ? false : true;
 
@@ -67,7 +56,7 @@ class Newspack_Newsletters_Contacts {
 		// Additional metadata can only be added when upserting a contact.
 		// This method is specific for handling Newsletter subscription, in which case there is no additional metadata being passed.
 		// Any additional metadata will be passes to the logs and filters though, so other actions can act upon it.
-		$accepted_metadata = apply_filters( 'newspack_newsletters_subscribe_accepted_metadata', [ 'status', 'name' ], $contact, $lists, $async, $context );
+		$accepted_metadata = [ 'status', 'name' ];
 		$subscribe_contact = $contact;
 		if ( ! empty( $subscribe_contact['metadata'] ) ) {
 			$subscribe_contact['metadata'] = array_intersect_key( $subscribe_contact['metadata'], array_flip( $accepted_metadata ) );
